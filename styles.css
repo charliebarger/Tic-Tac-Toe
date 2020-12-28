@@ -1,0 +1,51 @@
+html {
+  box-sizing: border-box;
+}
+
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
+}
+
+header h1 {
+  text-align: center;
+}
+
+.game-board-wrapper {
+  width: 350px;
+  height: 350px;
+  margin: auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr;
+}
+
+.one,
+.two,
+.three,
+.four,
+.five,
+.six {
+  border-bottom: black solid 4px;
+}
+
+.one,
+.two,
+.four,
+.five,
+.seven,
+.eight {
+  border-right: black solid 4px;
+}
+
+.game-square {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.game-square > span {
+  font-size: 100px;
+  display: inline-block;
+}
