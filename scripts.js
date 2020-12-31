@@ -1,10 +1,6 @@
 let gameboard = (function(){
     let filledSquares = []
-
-    let moveSquares = (square) => {
-        filledSquares.push(square)
-    }
-
+    const allSquares = [1,2,3,4,5,6,7,8,9];
     const winPatterns = [
         [1, 2, 3],
         [4, 5, 6],
@@ -16,14 +12,13 @@ let gameboard = (function(){
         [3, 5, 7]
     ]
 
-    const allSquares = [1,2,3,4,5,6,7,8,9];
-
-    const contains = (second) => {
+    const _contains = (second) => {
         for (let item of winPatterns){
             let indexArray = item.map(number => {
                 return second.indexOf(number);
             });
                 if (indexArray.indexOf(-1) === -1){
+                    _lockGameboard()
                     return true
                 }
                 else{
@@ -33,7 +28,7 @@ let gameboard = (function(){
         return false
     }
 
-    const lockGameboard = () => {
+    const _lockGameboard = () => {
         for (let x = 1; x<10; x++) {
             if (!filledSquares.includes(x)){
                 filledSquares.push(x)
@@ -41,47 +36,67 @@ let gameboard = (function(){
         }
     }
 
-    return {moveSquares, filledSquares, contains, lockGameboard, allSquares}
+    const checkForwinner = (player, number) => {
+        player.spaces.push(Number(number))
+        if(_contains(player.spaces)){
+            return (`${player.name} Wins!`)
+        }
+        else if(allSquares.length == filledSquares.length){
+            return ('Draw!')
+        }
+    }
+    return {filledSquares, checkForwinner}
 })();
+
 
 let displayController = (function(){
     let turn = 0;
-    const _incrimentTurn = () => {
-        return(++turn)
-    }
-
-    let checkForwinner = (player, number) => {
-        player.spaces.push(Number(number))
-        if(gameboard.contains(player.spaces)){
-            console.log(`Winner Winner!! ${player.name} Wins!!!`)
-            gameboard.lockGameboard()
-        }
-        else if(gameboard.allSquares.length == gameboard.filledSquares.length){
-            console.log('Tie!')
-        }
-
-    }
-
     const allSquares = document.querySelectorAll('.game-square');
+    let announcementWrapper = document.querySelector(".announcement")
+
+
+    function displayTurn(text){
+        console.log(announcementWrapper)
+        announcementWrapper.removeChild(announcementWrapper.firstElementChild);
+    
+        let newText = document.createElement("p")
+        newText.textContent = text
+        announcementWrapper.appendChild(newText)
+    }
+
+    function decideText(player, space){
+            let winner = gameboard.checkForwinner(player, space)
+            if (winner){
+                displayTurn(winner)
+            }
+            else{
+                displayTurn(`${player.name}'s Turn`)
+            }
+    }
+
+    function appendXorO(player, square){
+        let newSpan = document.createElement('span');
+        newSpan.textContent = player.marker;
+        square.appendChild(newSpan)
+    }
+
     allSquares.forEach(square => square.addEventListener('click', function(e){
          if (gameboard.filledSquares.includes(Number(e.currentTarget.id))){
              return
          }
-        _incrimentTurn()
-        gameboard.moveSquares(Number(e.currentTarget.id))
+        turn++
+        gameboard.filledSquares.push(Number(e.currentTarget.id))
         let newSpan = document.createElement('span');
+        let player
         if (turn % 2 == 0 ){
-            newSpan.textContent = 'O';
-            checkForwinner(player2, e.currentTarget.id)
+            player = player2
         }
         else{
-            newSpan.textContent = 'X'
-            checkForwinner(player1, e.currentTarget.id)
+            player = player1
         }
-        square.appendChild(newSpan)
+        decideText(player, e.currentTarget.id)
+        appendXorO(player, square)
     }))
-    
-    // return {contains}
 })();
 
 const player = (name, marker) => {
@@ -89,6 +104,6 @@ const player = (name, marker) => {
     return{name, marker, spaces}
 }
 
-const player1 = player("Player 1", "X")
-const player2 = player("PLayer2", "O")
+const player1 = player("Player X", "X")
+const player2 = player("Player O", "O")
 
