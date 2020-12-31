@@ -5,12 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="./styles.css">
     <title>Tik-Tak-Toe</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
+        rel="stylesheet">
 </head>
 <body>
     <header>
         <h1>Tik-Tak-Toe</h1>
+        <section class="center_me buttons">
+            <button>1 Player</button>
+            <button>2 Player</button>
+        </section>
     </header>
     <main>
+        <section class="center_me announcement">
+            <p>Player X's Turn</p>
+        </section>
         <section class="game-board-wrapper">
             <div class="game-square one" id="1"></div>
             <div class="game-square two" id="2"></div>
@@ -21,6 +32,9 @@
             <div class="game-square seven" id="7"></div>
             <div class="game-square eight" id="8"></div>
             <div class="game-square nine" id="9"></div>
+        </section>
+        <section class="center_me buttons">
+            <button>New Game</button>
         </section>
     </main>
 </body>
