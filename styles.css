@@ -1,21 +1,35 @@
 html {
   box-sizing: border-box;
 }
-
+body {
+  margin: 0px;
+}
 *,
 *:before,
 *:after {
-  box-sizing: inherit;
+  box-sizing: border-box;
+  font-family: "Roboto", sans-serif;
+}
+
+:root {
+  --red: #fa292a;
+  --brown: #b89f5d;
+  --blue: #4a7670;
 }
 
 header h1 {
   text-align: center;
+  margin-top: 0px;
+  color: white;
+  font-weight: 300;
+  font-size: 50px;
+  margin: 5px;
 }
 
 .game-board-wrapper {
   width: 350px;
   height: 350px;
-  margin: auto;
+  margin: 30px auto;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   grid-template-rows: 1fr 1fr 1fr;
@@ -27,7 +41,7 @@ header h1 {
 .four,
 .five,
 .six {
-  border-bottom: black solid 4px;
+  border-bottom: white solid 3px;
 }
 
 .one,
@@ -36,16 +50,74 @@ header h1 {
 .five,
 .seven,
 .eight {
-  border-right: black solid 4px;
+  border-right: white solid 3px;
 }
 
 .game-square {
   display: flex;
   align-items: center;
   justify-content: center;
+  margin: 0px;
+}
+
+.game-square:hover {
+  background-color: #181818;
 }
 
 .game-square > span {
-  font-size: 100px;
+  color: white;
+  font-size: 70px;
   display: inline-block;
+}
+
+.avatar_wrapper {
+  width: 15vw;
+}
+
+.avatar_wrapper > figcaption {
+  text-align: center;
+  padding-bottom: 20px;
+}
+
+.player {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 25px;
+}
+
+.center_me {
+  display: flex;
+  justify-content: center;
+  padding: 12px;
+}
+
+.buttons > button {
+  margin: 0px 10px;
+  padding: 8px 12px;
+  border: var(--brown) solid 2px;
+  background-color: var(--brown);
+  color: white;
+  box-shadow: 5px 5px 15px 5px #000000;
+  border-radius: 2px;
+}
+
+header {
+  margin: 0px;
+  background-color: var(--brown);
+  padding: 12px;
+}
+
+main {
+  background-color: black;
+}
+
+.center_me > p {
+  margin-bottom: 0px;
+  color: white;
+  font-size: 18px;
+}
+
+.announcement {
+  padding-bottom: 0px;
 }
