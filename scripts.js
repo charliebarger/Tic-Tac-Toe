@@ -64,19 +64,19 @@ let displayController = (function(){
         announcementWrapper.appendChild(newText)
     }
 
-    function decideText(player, space){
-            let winner = gameboard.checkForwinner(player, space)
+    function decideText(currentPlayer, nextPlayer, space){
+            let winner = gameboard.checkForwinner(currentPlayer, space)
             if (winner){
                 displayTurn(winner)
             }
             else{
-                displayTurn(`${player.name}'s Turn`)
+                displayTurn(`${nextPlayer.name}'s Turn`)
             }
     }
 
-    function appendXorO(player, square){
+    function appendXorO(marker, square){
         let newSpan = document.createElement('span');
-        newSpan.textContent = player.marker;
+        newSpan.textContent = marker;
         square.appendChild(newSpan)
     }
 
@@ -86,16 +86,19 @@ let displayController = (function(){
          }
         turn++
         gameboard.filledSquares.push(Number(e.currentTarget.id))
-        let newSpan = document.createElement('span');
-        let player
+        let currentPlayer
+        let nextPlayer
         if (turn % 2 == 0 ){
-            player = player2
+            nextPlayer = player1
+            currentPlayer = player2
         }
         else{
-            player = player1
+            nextPlayer = player2
+            currentPlayer = player1
         }
-        decideText(player, e.currentTarget.id)
-        appendXorO(player, square)
+        let marker = currentPlayer.marker
+        decideText(currentPlayer, nextPlayer, e.currentTarget.id)
+        appendXorO(marker, square)
     }))
 })();
 
