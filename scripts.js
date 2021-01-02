@@ -45,7 +45,14 @@ let gameboard = (function(){
             return ('Draw!')
         }
     }
-    return {filledSquares, checkForwinner}
+
+    const resetGame = () => {
+        gameboard.filledSquares = filledSquares = []
+        player1.spaces = [];
+        player2.spaces = [];
+    }
+
+    return {filledSquares, checkForwinner, resetGame}
 })();
 
 
@@ -53,31 +60,42 @@ let displayController = (function(){
     let turn = 0;
     const allSquares = document.querySelectorAll('.game-square');
     let announcementWrapper = document.querySelector(".announcement")
-
+    let resetButton = document.getElementById('new-game')
 
     function displayTurn(text){
-        console.log(announcementWrapper)
         announcementWrapper.removeChild(announcementWrapper.firstElementChild);
-    
         let newText = document.createElement("p")
         newText.textContent = text
         announcementWrapper.appendChild(newText)
     }
 
-    function decideText(currentPlayer, nextPlayer, space){
-            let winner = gameboard.checkForwinner(currentPlayer, space)
-            if (winner){
-                displayTurn(winner)
+
+    let decideText = (currentPlayer, nextPlayer, space = 0) => {
+            if (space > 0){
+                let winner = gameboard.checkForwinner(currentPlayer, space)
+                if (winner){
+                    displayTurn(winner)
+                    return
+                }
             }
-            else{
-                displayTurn(`${nextPlayer.name}'s Turn`)
-            }
+            displayTurn(`${nextPlayer.name}'s Turn`)
     }
 
     function appendXorO(marker, square){
         let newSpan = document.createElement('span');
         newSpan.textContent = marker;
         square.appendChild(newSpan)
+    }
+
+    let deleteXorO = () => {
+    gameboard.resetGame()
+    const gameSquares = document.querySelectorAll('.game-square');
+    gameSquares.forEach(square => {
+            if(square.firstChild){
+                square.removeChild(square.firstElementChild)
+            }
+        })
+    decideText(player1, player1)
     }
 
     allSquares.forEach(square => square.addEventListener('click', function(e){
@@ -100,6 +118,12 @@ let displayController = (function(){
         decideText(currentPlayer, nextPlayer, e.currentTarget.id)
         appendXorO(marker, square)
     }))
+
+    resetButton.addEventListener('click', () => {
+        turn = 0;
+        deleteXorO()
+    })
+
 })();
 
 const player = (name, marker) => {
