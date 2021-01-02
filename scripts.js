@@ -12,6 +12,7 @@ let gameboard = (function(){
         [3, 5, 7]
     ]
 
+
     const _contains = (second) => {
         for (let item of winPatterns){
             let indexArray = item.map(number => {
@@ -19,6 +20,7 @@ let gameboard = (function(){
             });
                 if (indexArray.indexOf(-1) === -1){
                     _lockGameboard()
+                    displayController.changeColor(second, indexArray)
                     return true
                 }
                 else{
@@ -62,10 +64,24 @@ let displayController = (function(){
     let announcementWrapper = document.querySelector(".announcement")
     let resetButton = document.getElementById('new-game')
 
-    function displayTurn(text){
+    const changeColor = (playerSpaces, winningIndex) => {
+        winningIndex.forEach(number => { 
+            let space = playerSpaces[number]
+            allSquares.forEach(square => {
+                if(Number(square.id) == space){
+                    square.firstChild.style.color = "red";
+                }
+            })
+
+
+        })
+    }
+
+    function displayTurn(text, color = 'white'){
         announcementWrapper.removeChild(announcementWrapper.firstElementChild);
         let newText = document.createElement("p")
         newText.textContent = text
+        newText.style.color = color;
         announcementWrapper.appendChild(newText)
     }
 
@@ -74,7 +90,7 @@ let displayController = (function(){
             if (space > 0){
                 let winner = gameboard.checkForwinner(currentPlayer, space)
                 if (winner){
-                    displayTurn(winner)
+                    displayTurn(winner, 'red')
                     return
                 }
             }
@@ -115,14 +131,16 @@ let displayController = (function(){
             currentPlayer = player1
         }
         let marker = currentPlayer.marker
-        decideText(currentPlayer, nextPlayer, e.currentTarget.id)
         appendXorO(marker, square)
+        decideText(currentPlayer, nextPlayer, e.currentTarget.id)
     }))
 
     resetButton.addEventListener('click', () => {
         turn = 0;
         deleteXorO()
     })
+
+    return{changeColor}
 
 })();
 
