@@ -14,24 +14,38 @@ let gameboard = (function(){
         [1, 5, 9],
         [3, 5, 7]
     ]
+    let active = true;
 
+    //checks if the items in the Arrays that are within the winPatterns Array are all in another Array(playerSelection)
 
-    const _contains = (second) => {
+    const _containsAwinner = (playerSelections) => {
         for (let item of winPatterns){
             let indexArray = item.map(number => {
-                return second.indexOf(number);
+                return playerSelections.indexOf(number);
             });
-                if (indexArray.indexOf(-1) === -1){
-                    _lockGameboard()
-                    displayController.changeColor(second, indexArray)
-                    return true
-                }
-                else{
-                    indexArray = []
-                }
+            if (indexArray.indexOf(-1) ===-1){
+                _lockGameboard()
+                displayController.changeColor(playerSelections, indexArray)
+                return true
             }
+            else{
+                indexArray = []
+            }
+        }
         return false
     }
+
+    const checkForwinner = (player, number) => {
+        player.spaces.push(Number(number))
+        if(_containsAwinner(player.spaces)){
+            return (`${player.name} Wins!`)
+        }
+        else if(allSquares.length == filledSquares.length){
+            return ('Draw!')
+        }
+    }
+
+    //locks game by filling up filledSquares completely
 
     const _lockGameboard = () => {
         for (let x = 1; x<10; x++) {
@@ -41,40 +55,16 @@ let gameboard = (function(){
         }
     }
 
-    const checkForwinner = (player, number) => {
-        player.spaces.push(Number(number))
-        if(_contains(player.spaces)){
-            return (`${player.name} Wins!`)
-        }
-        else if(allSquares.length == filledSquares.length){
-            return ('Draw!')
-        }
-    }
-
     const resetGame = () => {
-        gameboard.filledSquares = filledSquares = []
+        gameboard.filledSquares = filledSquares= []
         player1.spaces = [];
         player2.spaces = [];
     }
 
-     function twoPlayerMode(square){
-        turn++
-        filledSquares.push(Number(square.id))
-        if (turn % 2 == 0 ){
-            nextPlayer = player1
-            currentPlayer = player2
-        }
-        else{
-            nextPlayer = player2
-            currentPlayer = player1
-        }
-        displayController.appendXorO(currentPlayer.marker, square)
-        displayController.decideText(currentPlayer, nextPlayer, square.id)
-    }
+    //creates and returns a random number after evaluating availabe squares to choose from
 
-    function generateRandom() {
+    function _generateRandom() {
         let availableSquares = []
-        console.log(filledSquares)
         allSquares.forEach(square => {
             if (!filledSquares.includes(square)){
                 availableSquares.push(square)
@@ -83,35 +73,47 @@ let gameboard = (function(){
         index = Math.floor(availableSquares.length * Math.random());
         filledSquares.push(availableSquares[index])
         return availableSquares[index];
+    }
 
+    function twoPlayerMode(square){
+        turn++
+        filledSquares.push(Number(square.id))
+        if (turn % 2 == 0 ){
+            currentPlayer = player2
+            nextPlayer = player1
+        }
+        else{
+            currentPlayer = player1
+            nextPlayer = player2
+        }
+        displayController.appendXorO(currentPlayer.marker, square)
+        displayController.decideText(currentPlayer, nextPlayer, square.id)
     }
 
     function onePlayerMode(square, allSquares) {
         filledSquares.push(Number(square.id))
-        currentPlayer = player1
-        nextPlayer = player2
-        displayController.appendXorO(currentPlayer.marker, square)
-        displayController.decideText(currentPlayer, nextPlayer, square.id)
-        currentPlayer = player2
-        nextPlayer = player1
-        let number = generateRandom();
+        displayController.appendXorO(player1.marker, square)
+        displayController.decideText(player1, player2, square.id)
+        let number = _generateRandom();
         if (!number == []){
-            console.log(number)
             allSquares.forEach(box => {
                 if (Number(box.id) == number){
                     square = box
                     return
                 }
             })
+        gameboard.active = false;
         setTimeout(function() {
-            displayController.appendXorO(currentPlayer.marker, square)
-            displayController.decideText(currentPlayer, nextPlayer, square. id)
+            console.log(active)
+            displayController.appendXorO(player2.marker, square)
+            displayController.decideText(player2, player1, square. id)
         }, 1000);
         }
-
+        gameboard.active = true;
+        console.log(active)
     }
 
-    return {filledSquares, checkForwinner, resetGame, twoPlayerMode, onePlayerMode}
+    return {filledSquares, checkForwinner, resetGame, twoPlayerMode, onePlayerMode, active}
 })();
 
 
@@ -119,17 +121,11 @@ let displayController = (function(){
     const allSquares = document.querySelectorAll('.game-square');
     let announcementWrapper = document.querySelector(".announcement")
     let resetButton = document.getElementById('new-game')
-    let twoPlayer = document.getElementById("2-player");
-    let onePlayer = document.getElementById("1-player");
+    let twoPlayerButton = document.getElementById("two-player");
+    let onePlayerButton = document.getElementById("one-player");
     let onePlayerSwitch = true;
 
-    twoPlayer.addEventListener('click', () => {
-        onePlayerSwitch = false;
-    })
-
-     onePlayer.addEventListener('click', () => {
-         onePlayerSwitch = true;
-     } )
+    //takes an array holding player spaces, and the Index of the winning numbers in that array in order to make the winning X's or O's change color
 
     const changeColor = (playerSpaces, winningIndex) => {
         winningIndex.forEach(number => { 
@@ -139,12 +135,12 @@ let displayController = (function(){
                     square.firstChild.style.color = "red";
                 }
             })
-
-
         })
     }
 
-    function displayTurn(text, color = 'white'){
+    //Removes and appends new text above the gameboard
+
+    function _displayTurn(text, color = 'white'){
         announcementWrapper.removeChild(announcementWrapper.firstElementChild);
         let newText = document.createElement("p")
         newText.textContent = text
@@ -152,16 +148,17 @@ let displayController = (function(){
         announcementWrapper.appendChild(newText)
     }
 
+    //tests if checkForWinner returns true or false and decides text used to call _display turn based on that
 
     let decideText = (currentPlayer, nextPlayer, space = 0) => {
-            if (space > 0){
-                let winner = gameboard.checkForwinner(currentPlayer, space)
-                if (winner){
-                    displayTurn(winner, 'red')
-                    return
-                }
+        if (space > 0){
+            let winner = gameboard.checkForwinner(currentPlayer, space)
+            if (winner){
+                _displayTurn(winner, 'red')
+                return
             }
-            displayTurn(`${nextPlayer.name}'s Turn`)
+        }
+        _displayTurn(`${nextPlayer.name}'s Turn`)
     }
 
     function appendXorO(marker, square){
@@ -170,29 +167,51 @@ let displayController = (function(){
         square.appendChild(newSpan)
     }
 
-    let deleteXorO = () => {
-    gameboard.resetGame()
-    const gameSquares = document.querySelectorAll('.game-square');
-    gameSquares.forEach(square => {
+    let _deleteXorO = () => {
+        gameboard.resetGame()
+        const gameSquares = document.querySelectorAll('.game-square');
+        gameSquares.forEach(square => {
             if(square.firstChild){
                 square.removeChild(square.firstElementChild)
             }
         })
-    decideText(player1, player1)
+        decideText(player1, player1)
     }
 
+    function changeButtonColor(button1, button2) {
+        button1.style.background = "white";
+        button1.style.color =  "#b89f5d";
+        button2.style.background = "#b89f5d";
+        button2.style.color =  "white";
+    }
+
+    //Event Listners
+
+    twoPlayerButton.addEventListener('click', () => {
+        _deleteXorO()
+        onePlayerSwitch = false;
+        changeButtonColor(twoPlayerButton, onePlayerButton)
+    })
+
+     onePlayerButton.addEventListener('click', () => {
+         _deleteXorO()
+         onePlayerSwitch = true;
+         changeButtonColor(onePlayerButton, twoPlayerButton)
+     } )
+
+    //decides game mode when first square is clicked
 
     allSquares.forEach(square => square.addEventListener('click', function(e){
-         if (gameboard.filledSquares.includes(Number(e.currentTarget.id))){
-             return
-         }
-
-         onePlayerSwitch ? gameboard.onePlayerMode(square, allSquares) : gameboard.twoPlayerMode(square);
+        console.log(gameboard.active)
+        if (gameboard.filledSquares.includes(Number(e.currentTarget.id))|| gameboard.active == false){
+            return
+        }
+        onePlayerSwitch ? gameboard.onePlayerMode(square, allSquares) : gameboard.twoPlayerMode(square);
     }))
 
     resetButton.addEventListener('click', () => {
         turn = 0;
-        deleteXorO()
+        _deleteXorO()
     })
 
     return{changeColor, appendXorO, decideText}

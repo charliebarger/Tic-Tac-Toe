@@ -92,7 +92,7 @@ header h1 {
   padding: 12px;
 }
 
-.buttons > button {
+button {
   margin: 0px 10px;
   padding: 8px 12px;
   border: var(--brown) solid 2px;
@@ -120,4 +120,24 @@ main {
 
 .announcement {
   padding-bottom: 0px;
+}
+
+.buttons > button:active {
+  border: red solid 3px;
+}
+
+#one-player {
+  background: white;
+  color: var(--brown);
+}
+
+#new-game:hover,
+#two-player:hover,
+#one-player:hover {
+  transform: scale(1.1);
+}
+
+#new-game:hover {
+  background: white;
+  color: var(--brown);
 }
