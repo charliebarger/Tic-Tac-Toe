@@ -128,6 +128,7 @@ main {
 
 #one-player {
   background: white;
+  border: white solid 1px;
   color: var(--brown);
 }
 
@@ -140,4 +141,5 @@ main {
 #new-game:hover {
   background: white;
   color: var(--brown);
+  border: white solid 1px;
 }
