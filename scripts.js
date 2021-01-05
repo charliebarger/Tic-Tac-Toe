@@ -1,4 +1,7 @@
 let gameboard = (function(){
+    let turn = 0;
+    let currentPlayer
+    let nextPlayer
     let filledSquares = []
     const allSquares = [1,2,3,4,5,6,7,8,9];
     const winPatterns = [
@@ -54,15 +57,78 @@ let gameboard = (function(){
         player2.spaces = [];
     }
 
-    return {filledSquares, checkForwinner, resetGame}
+     function twoPlayerMode(square){
+        turn++
+        filledSquares.push(Number(square.id))
+        if (turn % 2 == 0 ){
+            nextPlayer = player1
+            currentPlayer = player2
+        }
+        else{
+            nextPlayer = player2
+            currentPlayer = player1
+        }
+        displayController.appendXorO(currentPlayer.marker, square)
+        displayController.decideText(currentPlayer, nextPlayer, square.id)
+    }
+
+    function generateRandom() {
+        let availableSquares = []
+        console.log(filledSquares)
+        allSquares.forEach(square => {
+            if (!filledSquares.includes(square)){
+                availableSquares.push(square)
+            }
+        })
+        index = Math.floor(availableSquares.length * Math.random());
+        filledSquares.push(availableSquares[index])
+        return availableSquares[index];
+
+    }
+
+    function onePlayerMode(square, allSquares) {
+        filledSquares.push(Number(square.id))
+        currentPlayer = player1
+        nextPlayer = player2
+        displayController.appendXorO(currentPlayer.marker, square)
+        displayController.decideText(currentPlayer, nextPlayer, square.id)
+        currentPlayer = player2
+        nextPlayer = player1
+        let number = generateRandom();
+        if (!number == []){
+            console.log(number)
+            allSquares.forEach(box => {
+                if (Number(box.id) == number){
+                    square = box
+                    return
+                }
+            })
+            displayController.appendXorO(currentPlayer.marker, square)
+            displayController.decideText(currentPlayer, nextPlayer, square. id)
+            console.log(square)
+        }
+
+    }
+
+    return {filledSquares, checkForwinner, resetGame, twoPlayerMode, onePlayerMode}
 })();
 
 
 let displayController = (function(){
-    let turn = 0;
     const allSquares = document.querySelectorAll('.game-square');
     let announcementWrapper = document.querySelector(".announcement")
     let resetButton = document.getElementById('new-game')
+    let twoPlayer = document.getElementById("2-player");
+    let onePlayer = document.getElementById("1-player");
+    let onePlayerSwitch = true;
+
+    twoPlayer.addEventListener('click', () => {
+        onePlayerSwitch = false;
+    })
+
+     onePlayer.addEventListener('click', () => {
+         onePlayerSwitch = true;
+     } )
 
     const changeColor = (playerSpaces, winningIndex) => {
         winningIndex.forEach(number => { 
@@ -114,25 +180,13 @@ let displayController = (function(){
     decideText(player1, player1)
     }
 
+
     allSquares.forEach(square => square.addEventListener('click', function(e){
          if (gameboard.filledSquares.includes(Number(e.currentTarget.id))){
              return
          }
-        turn++
-        gameboard.filledSquares.push(Number(e.currentTarget.id))
-        let currentPlayer
-        let nextPlayer
-        if (turn % 2 == 0 ){
-            nextPlayer = player1
-            currentPlayer = player2
-        }
-        else{
-            nextPlayer = player2
-            currentPlayer = player1
-        }
-        let marker = currentPlayer.marker
-        appendXorO(marker, square)
-        decideText(currentPlayer, nextPlayer, e.currentTarget.id)
+
+         onePlayerSwitch ? gameboard.onePlayerMode(square, allSquares) : gameboard.twoPlayerMode(square);
     }))
 
     resetButton.addEventListener('click', () => {
@@ -140,7 +194,7 @@ let displayController = (function(){
         deleteXorO()
     })
 
-    return{changeColor}
+    return{changeColor, appendXorO, decideText}
 
 })();
 
@@ -151,4 +205,3 @@ const player = (name, marker) => {
 
 const player1 = player("Player X", "X")
 const player2 = player("Player O", "O")
-
