@@ -103,9 +103,10 @@ let gameboard = (function(){
                     return
                 }
             })
+        setTimeout(function() {
             displayController.appendXorO(currentPlayer.marker, square)
             displayController.decideText(currentPlayer, nextPlayer, square. id)
-            console.log(square)
+        }, 1000);
         }
 
     }
