@@ -94,6 +94,7 @@ let gameboard = (function(){
         filledSquares.push(Number(square.id))
         displayController.appendXorO(player1.marker, square)
         displayController.decideText(player1, player2, square.id)
+        gameboard.active = false;
         let number = _generateRandom();
         if (!number == []){
             allSquares.forEach(box => {
@@ -102,15 +103,12 @@ let gameboard = (function(){
                     return
                 }
             })
-        gameboard.active = false;
         setTimeout(function() {
-            console.log(active)
+            gameboard.active = true
             displayController.appendXorO(player2.marker, square)
             displayController.decideText(player2, player1, square. id)
         }, 1000);
         }
-        gameboard.active = true;
-        console.log(active)
     }
 
     return {filledSquares, checkForwinner, resetGame, twoPlayerMode, onePlayerMode, active}
@@ -202,7 +200,6 @@ let displayController = (function(){
     //decides game mode when first square is clicked
 
     allSquares.forEach(square => square.addEventListener('click', function(e){
-        console.log(gameboard.active)
         if (gameboard.filledSquares.includes(Number(e.currentTarget.id))|| gameboard.active == false){
             return
         }
