@@ -104,11 +104,11 @@ let gameboard = (function(){
                 }
             })
         setTimeout(function() {
-            gameboard.active = true
             displayController.appendXorO(player2.marker, square)
             displayController.decideText(player2, player1, square. id)
         }, 1000);
         }
+        gameboard.active = true
     }
 
     return {filledSquares, checkForwinner, resetGame, twoPlayerMode, onePlayerMode, active}
@@ -179,8 +179,10 @@ let displayController = (function(){
     function changeButtonColor(button1, button2) {
         button1.style.background = "white";
         button1.style.color =  "#b89f5d";
+        button1.style.border = "white solid 1px"
         button2.style.background = "#b89f5d";
         button2.style.color =  "white";
+        button2.style.border = "#b89f5d solid 1px"
     }
 
     //Event Listners
@@ -200,6 +202,7 @@ let displayController = (function(){
     //decides game mode when first square is clicked
 
     allSquares.forEach(square => square.addEventListener('click', function(e){
+        console.log(gameboard.active)
         if (gameboard.filledSquares.includes(Number(e.currentTarget.id))|| gameboard.active == false){
             return
         }
@@ -208,7 +211,7 @@ let displayController = (function(){
 
     resetButton.addEventListener('click', () => {
         turn = 0;
-        _deleteXorO()
+        _deleteXorO();
     })
 
     return{changeColor, appendXorO, decideText}
