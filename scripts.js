@@ -15,6 +15,11 @@ let gameboard = (function(){
         [3, 5, 7]
     ]
     let active = true;
+    let eventSwitch = true;
+
+    const getEventSwitch = () => {
+        return eventSwitch;
+    }
 
     const getFilledSquares = () => {
         return filledSquares;
@@ -114,6 +119,7 @@ let gameboard = (function(){
         displayController.appendXorO(player1.marker, square)
         displayController.decideText(player1, player2, square.id)
         _flipActive()
+        eventSwitch = false;
         let number = _generateRandom();
         if (!number == []){
             allSquares.forEach(box => {
@@ -126,11 +132,12 @@ let gameboard = (function(){
             displayController.appendXorO(player2.marker, square)
             displayController.decideText(player2, player1, square. id)
             _flipActive()
+            eventSwitch = true;
         }, 1000);
         }
     }
 
-    return {getFilledSquares, checkForwinner, resetGame, twoPlayerMode, onePlayerMode, getActive}
+    return {getFilledSquares, checkForwinner, resetGame, twoPlayerMode, onePlayerMode, getActive, getEventSwitch}
 })();
 
 
@@ -207,15 +214,19 @@ let displayController = (function(){
     //Event Listners
 
     twoPlayerButton.addEventListener('click', () => {
-        _deleteXorO()
-        onePlayerSwitch = false;
-        changeButtonColor(twoPlayerButton, onePlayerButton)
+        if (gameboard.getEventSwitch()){
+            _deleteXorO()
+            onePlayerSwitch = false;
+            changeButtonColor(twoPlayerButton, onePlayerButton)
+        }
     })
 
      onePlayerButton.addEventListener('click', () => {
-         _deleteXorO()
-         onePlayerSwitch = true;
-         changeButtonColor(onePlayerButton, twoPlayerButton)
+         if (gameboard.getEventSwitch()){
+            _deleteXorO()
+            onePlayerSwitch = true;
+            changeButtonColor(onePlayerButton,     twoPlayerButton)
+         }
      } )
 
     //decides game mode when first square is clicked
@@ -228,8 +239,10 @@ let displayController = (function(){
     }))
 
     resetButton.addEventListener('click', () => {
-        turn = 0;
-        _deleteXorO();
+        if (gameboard.getEventSwitch()){
+            turn = 0;
+            _deleteXorO();
+        }
     })
 
     return{changeColor, appendXorO, decideText}
