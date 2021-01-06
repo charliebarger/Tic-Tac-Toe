@@ -138,3 +138,7 @@ main {
   background: white;
   color: var(--brown);
 }
+
+.buttons {
+  padding-bottom: 30px;
+}
