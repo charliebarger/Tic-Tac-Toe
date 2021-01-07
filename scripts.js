@@ -129,7 +129,6 @@ let gameboard = (function(){
                 }
             })
         setTimeout(function() {
-            console.log(onOff)
                 if (onOff == true){
                     displayController.appendXorO(player2.   marker,    square)
                     displayController.decideText(player2,   player1,  square. id)
