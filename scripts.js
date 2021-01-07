@@ -15,12 +15,12 @@ let gameboard = (function(){
         [3, 5, 7]
     ]
     let active = true;
-    let eventSwitch = true;
+    let onOff = true;
 
-    const getEventSwitch = () => {
-        return eventSwitch;
+    const fliponOff = () => {
+        onOff = false;
     }
-
+    
     const getFilledSquares = () => {
         return filledSquares;
     }
@@ -31,11 +31,9 @@ let gameboard = (function(){
 
     const _flipActive = () => {
         active ? active = false : active = true;
-        console.log(active)
     }
 
     const getActive = () => {
-            console.log(active)
             return active;
     }
 
@@ -80,6 +78,7 @@ let gameboard = (function(){
 
     const resetGame = () => {
         active = true;
+        turn = 0;
         filledSquares= []
         player1.spaces = [];
         player2.spaces = [];
@@ -101,6 +100,7 @@ let gameboard = (function(){
 
     function twoPlayerMode(square){
         turn++
+        onOff = true;
         _addSquares(square.id)
         if (turn % 2 == 0 ){
             currentPlayer = player2
@@ -115,11 +115,11 @@ let gameboard = (function(){
     }
 
     function onePlayerMode(square, allSquares) {
+        onOff = true
         _addSquares(square.id)
         displayController.appendXorO(player1.marker, square)
         displayController.decideText(player1, player2, square.id)
         _flipActive()
-        eventSwitch = false;
         let number = _generateRandom();
         if (!number == []){
             allSquares.forEach(box => {
@@ -129,15 +129,20 @@ let gameboard = (function(){
                 }
             })
         setTimeout(function() {
-            displayController.appendXorO(player2.marker, square)
-            displayController.decideText(player2, player1, square. id)
-            _flipActive()
-            eventSwitch = true;
+            console.log(onOff)
+                if (onOff == true){
+                    displayController.appendXorO(player2.   marker,    square)
+                    displayController.decideText(player2,   player1,  square. id)
+                    _flipActive()
+                }
+                else{
+                    onOff = true
+                }
         }, 1000);
         }
     }
 
-    return {getFilledSquares, checkForwinner, resetGame, twoPlayerMode, onePlayerMode, getActive, getEventSwitch}
+    return {getFilledSquares, checkForwinner, resetGame, twoPlayerMode, onePlayerMode, getActive, fliponOff}
 })();
 
 
@@ -214,19 +219,17 @@ let displayController = (function(){
     //Event Listners
 
     twoPlayerButton.addEventListener('click', () => {
-        if (gameboard.getEventSwitch()){
+            gameboard.fliponOff()
             _deleteXorO()
             onePlayerSwitch = false;
             changeButtonColor(twoPlayerButton, onePlayerButton)
-        }
     })
 
      onePlayerButton.addEventListener('click', () => {
-         if (gameboard.getEventSwitch()){
+            gameboard.fliponOff()
             _deleteXorO()
             onePlayerSwitch = true;
             changeButtonColor(onePlayerButton,     twoPlayerButton)
-         }
      } )
 
     //decides game mode when first square is clicked
@@ -239,10 +242,9 @@ let displayController = (function(){
     }))
 
     resetButton.addEventListener('click', () => {
-        if (gameboard.getEventSwitch()){
+            gameboard.fliponOff()
             turn = 0;
             _deleteXorO();
-        }
     })
 
     return{changeColor, appendXorO, decideText}
